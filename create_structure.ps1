@@ -20,8 +20,8 @@ Write-Host "Creating AI-QA-Agents directory structure..." -ForegroundColor Cyan
 Write-Host "Creating apps directory..." -ForegroundColor Yellow
 New-Item -Path "apps" -ItemType Directory -Force | Out-Null
 
-# Define all agents
-$agents = @('backlog-review-agent', 'unit-test-agent', 'performance-test-agent')
+# Define agents (unit-test-agent and performance-test-agent were removed)
+$agents = @('backlog-review-agent')
 
 # Create directories for each agent
 Write-Host "\nCreating agent directories..." -ForegroundColor Yellow
@@ -73,20 +73,33 @@ New-Item -Path "scripts" -ItemType Directory -Force | Out-Null
 Write-Host "\n===== Created Directory Structure =====" -ForegroundColor Cyan
 Write-Host "AI-QA-Agents/" -ForegroundColor Yellow
 
-foreach ($agent in $agents) {
-    Write-Host "  apps/$agent/" -ForegroundColor Green
-    Write-Host "    src/" -ForegroundColor White
-    Write-Host "      domain/" -ForegroundColor Gray
-    Write-Host "      use-cases/" -ForegroundColor Gray
-    Write-Host "      infrastructure/" -ForegroundColor Gray
-    Write-Host "    tests/" -ForegroundColor White
-    Write-Host "      unit/" -ForegroundColor Gray
-    Write-Host "      integration/" -ForegroundColor Gray
-    Write-Host "      e2e/" -ForegroundColor Gray
-    Write-Host "    config/" -ForegroundColor Gray
-    Write-Host "    prompts/" -ForegroundColor Gray
-    Write-Host "    docs/sdd/" -ForegroundColor Gray
-}
+Write-Host "  apps/backlog-review-agent/" -ForegroundColor Green
+Write-Host "    src/" -ForegroundColor White
+Write-Host "      domain/" -ForegroundColor Gray
+Write-Host "        entities/" -ForegroundColor Gray
+Write-Host "        rules/" -ForegroundColor Gray
+Write-Host "        services/" -ForegroundColor Gray
+Write-Host "      application/" -ForegroundColor Gray
+Write-Host "        use_cases/" -ForegroundColor Gray
+Write-Host "      infrastructure/" -ForegroundColor Gray
+Write-Host "        configuration/" -ForegroundColor Gray
+Write-Host "        jira/" -ForegroundColor Gray
+Write-Host "      presentation/" -ForegroundColor Gray
+Write-Host "        cli/" -ForegroundColor Gray
+Write-Host "        html/" -ForegroundColor Gray
+Write-Host "      bootstrap/" -ForegroundColor Gray
+Write-Host "    tests/" -ForegroundColor White
+Write-Host "      unit/" -ForegroundColor Gray
+Write-Host "      integration/" -ForegroundColor Gray
+Write-Host "      e2e/" -ForegroundColor Gray
+Write-Host "    config/" -ForegroundColor Gray
+Write-Host "    tools/" -ForegroundColor Gray
+Write-Host "    docs/" -ForegroundColor Gray
+Write-Host "      adr/" -ForegroundColor Gray
+Write-Host "      api/" -ForegroundColor Gray
+Write-Host "      diagrams/" -ForegroundColor Gray
+Write-Host "      sdd/" -ForegroundColor Gray
+Write-Host "      srs/" -ForegroundColor Gray
 
 Write-Host "  shared/" -ForegroundColor Green
 Write-Host "    domain/" -ForegroundColor Gray
