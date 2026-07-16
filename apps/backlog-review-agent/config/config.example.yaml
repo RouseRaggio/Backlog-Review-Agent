@@ -1,0 +1,24 @@
+# Backlog Review Agent - Configuración de ejemplo
+# Copia este archivo como config.yaml y ajusta los valores.
+#
+# Variables de entorno usadas (sobreescriben estos valores):
+#   JIRA_URL, JIRA_EMAIL, JIRA_API_TOKEN
+
+jira:
+  url: "https://tusitio.atlassian.net"
+  email: "tu-email@ejemplo.com"
+  # token: se lee de JIRA_API_TOKEN en .env
+
+audit:
+  max_results: 100
+  rules:
+    - id: BR-001
+      enabled: true
+    - id: BR-002
+      enabled: true
+    - id: BR-003
+      enabled: true
+
+report:
+  output_dir: "reports/latest"
+  template: "src/presentation/html/templates/report.html"
