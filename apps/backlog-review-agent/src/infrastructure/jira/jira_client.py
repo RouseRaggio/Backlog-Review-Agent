@@ -10,33 +10,18 @@ No contiene reglas de negocio.
 No conoce nada sobre IA.
 """
 
-import os
-
 import requests
-from dotenv import load_dotenv
 
 from src.domain.entities.issue import Issue
 from src.infrastructure.jira.jira_mapper import JiraMapper
-
-load_dotenv()
+from src.infrastructure.configuration.jira_config import JiraConfig
 
 
 class JiraClient:
 
-    def __init__(self):
+    def __init__(self, config: JiraConfig | None = None):
 
-        self.base_url = os.getenv("JIRA_URL")
-        self.email = os.getenv("JIRA_EMAIL")
-        self.token = os.getenv("JIRA_API_TOKEN")
-
-        if not self.base_url:
-            raise ValueError("JIRA_URL no configurada")
-
-        if not self.email:
-            raise ValueError("JIRA_EMAIL no configurado")
-
-        if not self.token:
-            raise ValueError("JIRA_API_TOKEN no configurado")
+        self._config = config or JiraConfig.from_env()
 
         self.headers = {
             "Accept": "application/json"
@@ -51,7 +36,7 @@ class JiraClient:
         Obtiene los Issues de un proyecto.
         """
 
-        url = f"{self.base_url}/rest/api/3/search/jql"
+        url = f"{self._config.base_url}/rest/api/3/search/jql"
 
         params = {
             "jql": f"project = {project_key}",
@@ -71,7 +56,7 @@ class JiraClient:
             url,
             headers=self.headers,
             params=params,
-            auth=(self.email, self.token),
+            auth=(self._config.email, self._config.token),
             timeout=30,
         )
 
