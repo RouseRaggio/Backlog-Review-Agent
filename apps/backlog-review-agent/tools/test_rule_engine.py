@@ -5,7 +5,7 @@ Este archivo permite validar que las reglas automáticas
 se ejecutan correctamente sobre un Issue.
 """
 
-from src.domain.models.issue import Issue
+from src.domain.entities.issue import Issue
 from src.domain.services.rule_engine import RuleEngine
 
 
