@@ -1,0 +1,65 @@
+schema: spec-driven
+
+context: |
+  Project: Backlog Review Agent
+
+  Purpose:
+    AI-powered QA agent that evaluates the quality of Jira Backlogs.
+
+  Architecture:
+    Clean Architecture
+
+  Language:
+    Python 3.11
+
+  Main technologies:
+    - Python
+    - Jira Cloud REST API
+    - Claude API (future versions)
+    - HTML Report Generator
+
+  Project structure:
+    apps/
+      backlog-review-agent/
+    shared/
+
+  Main workflow:
+    1. Connect to Jira Cloud
+    2. Execute JQL query
+    3. Retrieve Issues
+    4. Convert Issues to internal models
+    5. Execute QA rules
+    6. Calculate Backlog Quality Score
+    7. Generate HTML report
+
+  Coding conventions:
+    - Clean Architecture
+    - SOLID
+    - Dependency Injection
+    - Type hints
+    - Unit tests with pytest
+
+rules:
+
+  proposal:
+    - Describe the business problem.
+    - Explain why the change is needed.
+    - List assumptions.
+    - Include success criteria.
+
+  specs:
+    - Use SHALL statements.
+    - Describe functional behavior only.
+    - Include acceptance criteria.
+    - Include edge cases.
+
+  design:
+    - Explain architecture decisions.
+    - Include sequence diagrams when applicable.
+    - Explain interactions between layers.
+    - Justify design choices.
+
+  tasks:
+    - Keep tasks under 2 hours.
+    - Include unit testing tasks.
+    - Respect Clean Architecture boundaries.

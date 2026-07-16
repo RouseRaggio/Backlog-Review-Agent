@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Backlog Review Agent</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+
+            font-family:Segoe UI, Arial, Helvetica, sans-serif;
+
+            background:#f4f7fb;
+
+            color:#333;
+
+            padding:40px;
+
+        }
+
+        .container{
+
+            max-width:1400px;
+
+            margin:auto;
+
+        }
+
+        h1{
+
+            font-size:34px;
+
+            margin-bottom:10px;
+
+        }
+
+        h2{
+
+            margin-bottom:20px;
+
+        }
+
+        .subtitle{
+
+            color:#666;
+
+            margin-bottom:30px;
+
+        }
+
+        .card{
+
+            background:white;
+
+            border-radius:14px;
+
+            padding:25px;
+
+            margin-bottom:25px;
+
+            box-shadow:0 5px 20px rgba(0,0,0,.08);
+
+        }
+
+        .score{
+
+            text-align:center;
+
+        }
+
+        .score-value{
+
+            font-size:70px;
+
+            font-weight:bold;
+
+            color:#1E88E5;
+
+        }
+
+        .cards{
+
+            display:grid;
+
+            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+            gap:20px;
+
+        }
+
+        .metric{
+
+            background:#fafafa;
+
+            border-radius:12px;
+
+            padding:20px;
+
+            text-align:center;
+
+        }
+
+        .metric h3{
+
+            margin-bottom:15px;
+
+            color:#666;
+
+            font-size:15px;
+
+        }
+
+        .metric span{
+
+            font-size:38px;
+
+            font-weight:bold;
+
+        }
+
+        .pass{
+
+            color:#2E7D32;
+
+        }
+
+        .fail{
+
+            color:#D32F2F;
+
+        }
+
+        .warning{
+
+            color:#F57C00;
+
+        }
+
+        .blocked{
+
+            color:#757575;
+
+        }
+
+        table{
+
+            width:100%;
+
+            border-collapse:collapse;
+
+            margin-top:20px;
+
+        }
+
+        thead{
+
+            background:#1976D2;
+
+            color:white;
+
+        }
+
+        th{
+
+            padding:15px;
+
+            text-align:left;
+
+        }
+
+        td{
+
+            padding:14px;
+
+            border-bottom:1px solid #eee;
+
+        }
+
+        tbody tr:hover{
+
+            background:#f8fbff;
+
+        }
+
+        .badge{
+
+            padding:5px 10px;
+
+            border-radius:6px;
+
+            font-weight:bold;
+
+            color:white;
+
+        }
+
+        .badge-pass{
+
+            background:#2E7D32;
+
+        }
+
+        .badge-fail{
+
+            background:#D32F2F;
+
+        }
+
+        .badge-warning{
+
+            background:#F57C00;
+
+        }
+
+        .badge-blocked{
+
+            background:#757575;
+
+        }
+
+        .footer{
+
+            text-align:center;
+
+            margin-top:40px;
+
+            color:#999;
+
+            font-size:13px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🤖 Backlog Review Agent</h1>
+
+    <p class="subtitle">
+
+        Proyecto <strong>CAP1R1R</strong>
+
+        &nbsp;|&nbsp;
+
+        Generado: 13/07/2026 21:02:15
+
+    </p>
+
+    <div class="card score">
+
+        <h2>Backlog Quality Score</h2>
+
+        <div class="score-value">
+
+            100.00%
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Resumen</h2>
+
+        <div class="cards">
+
+            <div class="metric">
+
+                <h3>Hallazgos</h3>
+
+                <span>0</span>
+
+            </div>
+
+            <div class="metric">
+
+                <h3>PASS</h3>
+
+                <span class="pass">0</span>
+
+            </div>
+
+            <div class="metric">
+
+                <h3>FAIL</h3>
+
+                <span class="fail">0</span>
+
+            </div>
+
+            <div class="metric">
+
+                <h3>WARNING</h3>
+
+                <span class="warning">0</span>
+
+            </div>
+
+            <div class="metric">
+
+                <h3>BLOCKED</h3>
+
+                <span class="blocked">0</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Detalle de Hallazgos</h2>
+
+        <table>
+
+            <thead>
+
+            <tr>
+
+                <th>Issue</th>
+
+                <th>Regla</th>
+
+                <th>Estado</th>
+
+                <th>Severidad</th>
+
+                <th>Mensaje</th>
+
+                <th>Recomendación</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+                
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="footer">
+
+        Backlog Review Agent • AI-QA-Agents
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

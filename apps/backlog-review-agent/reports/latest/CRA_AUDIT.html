@@ -1,0 +1,13618 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Backlog Review Agent</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+
+            font-family:Segoe UI, Arial, Helvetica, sans-serif;
+
+            background:#f4f7fb;
+
+            color:#333;
+
+            padding:40px;
+
+        }
+
+        .container{
+
+            max-width:1400px;
+
+            margin:auto;
+
+        }
+
+        h1{
+
+            font-size:34px;
+
+            margin-bottom:10px;
+
+        }
+
+        h2{
+
+            margin-bottom:20px;
+
+        }
+
+        .subtitle{
+
+            color:#666;
+
+            margin-bottom:30px;
+
+        }
+
+        .card{
+
+            background:white;
+
+            border-radius:14px;
+
+            padding:25px;
+
+            margin-bottom:25px;
+
+            box-shadow:0 5px 20px rgba(0,0,0,.08);
+
+        }
+
+        .score{
+
+            text-align:center;
+
+        }
+
+        .score-value{
+
+            font-size:70px;
+
+            font-weight:bold;
+
+            color:#1E88E5;
+
+        }
+
+        .cards{
+
+            display:grid;
+
+            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+
+            gap:20px;
+
+        }
+
+        .metric{
+
+            background:#fafafa;
+
+            border-radius:12px;
+
+            padding:20px;
+
+            text-align:center;
+
+        }
+
+        .metric h3{
+
+            margin-bottom:15px;
+
+            color:#666;
+
+            font-size:15px;
+
+        }
+
+        .metric span{
+
+            font-size:38px;
+
+            font-weight:bold;
+
+        }
+
+        .pass{
+
+            color:#2E7D32;
+
+        }
+
+        .fail{
+
+            color:#D32F2F;
+
+        }
+
+        .warning{
+
+            color:#F57C00;
+
+        }
+
+        .blocked{
+
+            color:#757575;
+
+        }
+
+        table{
+
+            width:100%;
+
+            border-collapse:collapse;
+
+            margin-top:20px;
+
+        }
+
+        thead{
+
+            background:#1976D2;
+
+            color:white;
+
+        }
+
+        th{
+
+            padding:15px;
+
+            text-align:left;
+
+        }
+
+        td{
+
+            padding:14px;
+
+            border-bottom:1px solid #eee;
+
+        }
+
+        tbody tr:hover{
+
+            background:#f8fbff;
+
+        }
+
+        .badge{
+
+            padding:5px 10px;
+
+            border-radius:6px;
+
+            font-weight:bold;
+
+            color:white;
+
+        }
+
+        .badge-pass{
+
+            background:#2E7D32;
+
+        }
+
+        .badge-fail{
+
+            background:#D32F2F;
+
+        }
+
+        .badge-warning{
+
+            background:#F57C00;
+
+        }
+
+        .badge-blocked{
+
+            background:#757575;
+
+        }
+
+        .footer{
+
+            text-align:center;
+
+            margin-top:40px;
+
+            color:#999;
+
+            font-size:13px;
+
+        }
+
+        .toolbar{
+
+            display:flex;
+
+            flex-wrap:wrap;
+
+            gap:12px;
+
+            align-items:center;
+
+            margin-bottom:20px;
+
+        }
+
+        .toolbar .field{
+
+            display:flex;
+
+            flex-direction:column;
+
+            gap:4px;
+
+        }
+
+        .toolbar label{
+
+            font-size:12px;
+
+            color:#666;
+
+        }
+
+        .toolbar input[type="text"],
+        .toolbar select{
+
+            padding:8px 10px;
+
+            border:1px solid #ddd;
+
+            border-radius:8px;
+
+            font-size:14px;
+
+            background:white;
+
+            color:#333;
+
+        }
+
+        .toolbar input[type="text"]{
+
+            min-width:220px;
+
+        }
+
+        .toolbar .spacer{
+
+            flex:1;
+
+        }
+
+        .btn{
+
+            padding:9px 16px;
+
+            border-radius:8px;
+
+            border:none;
+
+            font-size:14px;
+
+            font-weight:bold;
+
+            cursor:pointer;
+
+            color:white;
+
+            background:#1976D2;
+
+        }
+
+        .btn:hover{
+
+            background:#155a9c;
+
+        }
+
+        .btn.secondary{
+
+            background:#546E7A;
+
+        }
+
+        .btn.secondary:hover{
+
+            background:#3f5259;
+
+        }
+
+        .results-count{
+
+            color:#666;
+
+            font-size:13px;
+
+            margin-bottom:10px;
+
+        }
+
+        .no-results td{
+
+            text-align:center;
+
+            padding:30px;
+
+            color:#999;
+
+        }
+
+        @media print{
+
+            .toolbar, .btn{
+
+                display:none !important;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🤖 Backlog Review Agent</h1>
+
+    <p class="subtitle">
+
+        Proyecto <strong>CRA</strong>
+
+        &nbsp;|&nbsp;
+
+        Generado: 14/07/2026 16:22:36
+
+    </p>
+
+    <div class="toolbar">
+
+        <button class="btn" id="downloadHtmlBtn" type="button">⬇️ Descargar HTML</button>
+
+        <button class="btn secondary" id="printBtn" type="button">🖨️ Imprimir / PDF</button>
+
+    </div>
+
+    <div class="card score">
+
+        <h2>Backlog Quality Score</h2>
+
+        <div class="score-value">
+
+            83.73%
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Resumen</h2>
+
+        <div class="cards">
+
+            <div class="metric">
+
+                <h3>Hallazgos</h3>
+
+                <span>762</span>
+
+            </div>
+
+            <div class="metric">
+
+                <h3>PASS</h3>
+
+                <span class="pass">638</span>
+
+            </div>
+
+            <div class="metric">
+
+                <h3>FAIL</h3>
+
+                <span class="fail">124</span>
+
+            </div>
+
+            <div class="metric">
+
+                <h3>WARNING</h3>
+
+                <span class="warning">0</span>
+
+            </div>
+
+            <div class="metric">
+
+                <h3>BLOCKED</h3>
+
+                <span class="blocked">0</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Detalle de Hallazgos</h2>
+
+        <div class="toolbar">
+
+            <div class="field">
+
+                <label for="searchInput">Buscar</label>
+
+                <input type="text" id="searchInput" placeholder="Issue, mensaje...">
+
+            </div>
+
+            <div class="field">
+
+                <label for="statusFilter">Estado</label>
+
+                <select id="statusFilter">
+
+                    <option value="">Todos</option>
+
+                    <option value="PASS">PASS</option>
+
+                    <option value="FAIL">FAIL</option>
+
+                    <option value="WARNING">WARNING</option>
+
+                    <option value="BLOCKED">BLOCKED</option>
+
+                </select>
+
+            </div>
+
+            <div class="field">
+
+                <label for="severityFilter">Severidad</label>
+
+                <select id="severityFilter">
+
+                    <option value="">Todas</option>
+
+                </select>
+
+            </div>
+
+            <div class="spacer"></div>
+
+            <button class="btn secondary" id="clearFiltersBtn" type="button">✖ Limpiar filtros</button>
+
+        </div>
+
+        <p class="results-count" id="resultsCount"></p>
+
+        <table>
+
+            <thead>
+
+            <tr>
+
+                <th>Issue</th>
+
+                <th>Regla</th>
+
+                <th>Estado</th>
+
+                <th>Severidad</th>
+
+                <th>Mensaje</th>
+
+                <th>Recomendación</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+                
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-146</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-146</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-146</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-146</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-146</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-146</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-146</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-146</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-145</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-145</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-145</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-145</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-145</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-145</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe estar asociado a una Epic.</td>
+
+<td>Asociar el Issue a una Epic.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-145</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-145</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-144</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-144</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-144</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-144</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-144</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-144</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-144</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-144</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-143</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-143</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-143</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-143</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-143</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-143</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-143</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-143</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-142</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-142</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-142</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-142</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-142</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-142</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-142</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-142</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-141</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-141</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-141</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-141</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-141</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-141</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-141</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-141</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-140</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-140</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-140</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-140</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-140</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-140</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-140</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-140</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-139</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-139</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-139</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-139</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-139</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-139</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-139</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-139</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-138</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-138</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-138</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-138</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-138</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-138</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-138</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-138</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-137</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-137</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-137</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-137</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-137</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-137</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-137</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-137</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-136</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-136</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-136</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-136</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-136</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-136</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-136</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-136</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-135</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-135</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-135</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-135</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-135</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-135</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-135</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-135</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-134</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-134</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-134</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-134</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-134</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-134</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-134</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-134</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-133</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-133</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-133</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-133</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-133</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-133</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-133</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-133</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-132</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-132</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-132</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-132</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-132</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-132</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-132</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-132</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-131</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-131</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-131</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-131</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-131</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-131</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-131</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-131</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-130</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-130</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-130</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-130</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-130</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-130</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-130</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-130</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-129</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-129</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-129</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-129</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-129</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-129</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-129</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-129</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-128</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-128</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-128</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-128</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-128</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-128</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-128</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-128</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-127</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-127</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-127</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-127</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-127</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-127</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-127</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-127</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-126</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-126</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-126</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-126</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-126</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-126</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-126</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-126</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-125</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-125</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-125</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-125</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-125</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-125</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-125</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-125</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-124</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-124</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-124</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-124</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-124</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-124</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-124</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-124</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-123</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-123</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-123</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-123</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-123</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-123</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-123</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-123</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-122</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-122</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-122</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-122</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-122</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-122</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe estar asociado a una Epic.</td>
+
+<td>Asociar el Issue a una Epic.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-122</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-122</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-121</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-121</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-121</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-121</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-121</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-121</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-121</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-121</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-120</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-120</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-120</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-120</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-120</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-120</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-120</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-120</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-119</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-119</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-119</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-119</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-119</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-119</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-119</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-119</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-118</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-118</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-118</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-118</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-118</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-118</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-118</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-118</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-117</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-117</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-117</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-117</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-117</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-116</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-116</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-116</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-116</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-116</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-116</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-116</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-116</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-115</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-115</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-115</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-115</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-115</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-115</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-115</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-115</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-114</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-114</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-114</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-114</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-114</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-114</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-114</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-114</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-113</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-113</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-113</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-113</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-113</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-113</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-113</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-113</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-112</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-112</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-112</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-112</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-112</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-112</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-112</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-112</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-111</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-111</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-111</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-111</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-111</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-111</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-111</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-111</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-110</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-110</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-110</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-110</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-110</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-110</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-110</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-110</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-109</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-109</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-109</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-109</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-109</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-109</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-109</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-109</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-108</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-108</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-108</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-108</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-108</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-108</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-108</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-108</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-107</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-107</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-107</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-107</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-107</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-107</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-107</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-107</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-106</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-106</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-106</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-106</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-106</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-106</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-106</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-106</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-105</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-105</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-105</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-105</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-105</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-105</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-105</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-105</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-104</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-104</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-104</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-104</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-104</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-104</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-104</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-104</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-103</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-103</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-103</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-103</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-103</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-103</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-103</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-103</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-102</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-102</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-102</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-102</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-102</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-102</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-102</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-102</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-101</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-101</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-101</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-101</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-101</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-101</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-101</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-101</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-100</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-100</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-100</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-100</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-100</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-100</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-100</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-100</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-99</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-99</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-99</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-99</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-99</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-99</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-99</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-99</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-98</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-98</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-98</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-98</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-98</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-98</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-98</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-98</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-97</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-97</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-97</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-97</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-97</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-97</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-97</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-97</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-96</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-96</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-96</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-96</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-96</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-96</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-96</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-96</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-95</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-95</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-95</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-95</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-95</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-95</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-95</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-95</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-94</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-94</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-94</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-94</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-94</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-94</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-94</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-94</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-93</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-93</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-93</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-93</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-93</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-93</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-93</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-93</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-92</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-92</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-92</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-92</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-92</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-92</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-92</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-92</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-91</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-91</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-91</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-91</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-91</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-91</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-91</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-91</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-90</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-90</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-90</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-90</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-90</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-90</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-90</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-90</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-89</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-89</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-89</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-89</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-89</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-89</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-89</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-89</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-88</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-88</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-88</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-88</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-88</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-87</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-87</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-87</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-87</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-87</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-87</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-87</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-87</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-86</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-86</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-86</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-86</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-86</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-86</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-86</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-86</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-85</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-85</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-85</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-85</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-85</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-85</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-85</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-85</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-84</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-84</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-84</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-84</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-84</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-84</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-84</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-84</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-83</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-83</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-83</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-83</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-83</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-83</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-83</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-83</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-82</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-82</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-82</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-82</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-82</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-82</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-82</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-82</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-81</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-81</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-81</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-81</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-81</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-81</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-81</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-81</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-80</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-80</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-80</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-80</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-80</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-80</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-80</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-80</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-79</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-79</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-79</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-79</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-79</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-79</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-79</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-79</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-78</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-78</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-78</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-78</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-78</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-78</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-78</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-78</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-77</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-77</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-77</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-77</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-77</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-77</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-77</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-77</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-76</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-76</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-76</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-76</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-76</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-76</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-76</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-76</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-75</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-75</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-75</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-75</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-75</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-74</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-74</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-74</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-74</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-74</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-74</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-74</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-74</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-73</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-73</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-73</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-73</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-73</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-73</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-73</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-73</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-72</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-72</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-72</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-72</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-72</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-72</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-72</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-72</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-71</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-71</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-71</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-71</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-71</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-70</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-70</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-70</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-70</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-70</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-70</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-70</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-70</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-69</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-69</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-69</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-69</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-69</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-69</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-69</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-69</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-68</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-68</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-68</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-68</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-68</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-68</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-68</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-68</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-67</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-67</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-67</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-67</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-67</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-67</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-67</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-67</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-66</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-66</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-66</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-66</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-66</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-66</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-66</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-66</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-65</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-65</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-65</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-65</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-65</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-65</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-65</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-65</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-62</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-62</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-62</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-62</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-62</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-62</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-62</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-62</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-61</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-61</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-61</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-61</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-61</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-61</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-61</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-61</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-60</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-60</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-60</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-60</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-60</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-60</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-60</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-60</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-59</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-59</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-59</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-59</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-59</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-59</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-56</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-56</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-56</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-56</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-56</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-56</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-55</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-55</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-55</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-55</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-55</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-55</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-54</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-54</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-54</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-54</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-54</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-54</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-53</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-53</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-53</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-53</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-53</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-53</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-52</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-52</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-52</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-52</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-52</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-52</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-51</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-51</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-51</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-51</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-51</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-51</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-50</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-50</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-50</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-50</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-50</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-50</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-49</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-49</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-49</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-49</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-49</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-49</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-48</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-48</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-48</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-48</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-48</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-48</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-47</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-47</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-47</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-47</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-47</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-47</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-46</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-46</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-46</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-46</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-46</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-46</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-46</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-46</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-45</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-45</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-45</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-45</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-45</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-45</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-44</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-44</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-44</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-44</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-44</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-44</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-43</td>
+
+<td>BR-001</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-43</td>
+
+<td>BR-002</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe tener descripción.</td>
+
+<td>Agregar una descripción clara y completa.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-43</td>
+
+<td>BR-003</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-43</td>
+
+<td>BR-004</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="FAIL" data-severity="HIGH">
+
+<td>CRA-43</td>
+
+<td>BR-005</td>
+
+<td><span class="badge badge-fail">FAIL</span></td>
+
+<td>HIGH</td>
+
+<td>No cumple la regla: El Issue debe pertenecer a un Sprint.</td>
+
+<td>Asociar el Issue a un Sprint.</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-43</td>
+
+<td>BR-006</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-43</td>
+
+<td>BR-009</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+<tr data-status="PASS" data-severity="-">
+
+<td>CRA-43</td>
+
+<td>BR-010</td>
+
+<td><span class="badge badge-pass">PASS</span></td>
+
+<td>-</td>
+
+<td>Regla cumplida.</td>
+
+<td>-</td>
+
+</tr>
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="footer">
+
+        Backlog Review Agent • AI-QA-Agents
+
+    </div>
+
+</div>
+
+<script>
+(function () {
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const severityFilter = document.getElementById('severityFilter');
+    const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+    const resultsCount = document.getElementById('resultsCount');
+    const tbody = document.querySelector('table tbody');
+    const downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
+    const printBtn = document.getElementById('printBtn');
+
+    if (!tbody) return;
+
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+
+    const severities = Array.from(
+        new Set(rows.map(r => r.dataset.severity).filter(s => s && s !== '-'))
+    ).sort();
+
+    severities.forEach(sev => {
+        const opt = document.createElement('option');
+        opt.value = sev;
+        opt.textContent = sev;
+        severityFilter.appendChild(opt);
+    });
+
+    let noResultsRow = null;
+
+    function ensureNoResultsRow() {
+        if (!noResultsRow) {
+            noResultsRow = document.createElement('tr');
+            noResultsRow.className = 'no-results';
+            const td = document.createElement('td');
+            td.colSpan = 6;
+            td.textContent = 'No se encontraron hallazgos con los filtros aplicados.';
+            noResultsRow.appendChild(td);
+        }
+        return noResultsRow;
+    }
+
+    function applyFilters() {
+        const term = searchInput.value.trim().toLowerCase();
+        const status = statusFilter.value;
+        const severity = severityFilter.value;
+
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const matchesStatus = !status || row.dataset.status === status;
+            const matchesSeverity = !severity || row.dataset.severity === severity;
+            const matchesTerm = !term || row.textContent.toLowerCase().includes(term);
+            const visible = matchesStatus && matchesSeverity && matchesTerm;
+
+            row.style.display = visible ? '' : 'none';
+
+            if (visible) visibleCount++;
+        });
+
+        const emptyRow = ensureNoResultsRow();
+
+        if (visibleCount === 0) {
+            if (!emptyRow.isConnected) tbody.appendChild(emptyRow);
+        } else if (emptyRow.isConnected) {
+            emptyRow.remove();
+        }
+
+        resultsCount.textContent = `Mostrando ${visibleCount} de ${rows.length} hallazgos`;
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    statusFilter.addEventListener('change', applyFilters);
+    severityFilter.addEventListener('change', applyFilters);
+
+    clearFiltersBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        statusFilter.value = '';
+        severityFilter.value = '';
+        applyFilters();
+    });
+
+    printBtn.addEventListener('click', () => window.print());
+
+    downloadHtmlBtn.addEventListener('click', () => {
+        const doc = document.documentElement.cloneNode(true);
+
+        doc.querySelectorAll('.toolbar, .no-results').forEach(el => el.remove());
+        doc.querySelectorAll('table tbody tr').forEach(row => row.style.display = '');
+
+        const html = '<!DOCTYPE html>\n' + doc.outerHTML;
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const project = 'CRA'.replace(/[^a-z0-9_-]+/gi, '_');
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${project}_AUDIT.html`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    });
+
+    applyFilters();
+})();
+</script>
+
+</body>
+
+</html>
