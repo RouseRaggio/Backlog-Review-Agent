@@ -15,7 +15,7 @@ import os
 import requests
 from dotenv import load_dotenv
 
-from src.domain.models.issue import Issue
+from src.domain.entities.issue import Issue
 from src.infrastructure.jira.jira_mapper import JiraMapper
 
 load_dotenv()

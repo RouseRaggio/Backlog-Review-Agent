@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 
-from src.domain.models.audit_report import AuditReport
+from src.domain.entities.audit_report import AuditReport
 
 
 class HtmlReportGenerator:

@@ -4,7 +4,7 @@ Automatic Audit Rules
 Catálogo de reglas automáticas utilizadas por el Rule Engine.
 """
 
-from src.domain.models.rule import Rule
+from src.domain.entities.rule import Rule
 
 
 AUTOMATIC_RULES = [

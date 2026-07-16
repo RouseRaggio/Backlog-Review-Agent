@@ -8,9 +8,9 @@ y generar los hallazgos correspondientes.
 
 from __future__ import annotations
 
-from src.domain.models.finding import Finding
-from src.domain.models.issue import Issue
-from src.domain.models.rule import Rule
+from src.domain.entities.finding import Finding
+from src.domain.entities.issue import Issue
+from src.domain.entities.rule import Rule
 from src.domain.rules.automatic_rules import AUTOMATIC_RULES
 
 

@@ -6,7 +6,7 @@ Calcula el Backlog Quality Score de una auditoría.
 
 from __future__ import annotations
 
-from src.domain.models.audit_report import AuditReport
+from src.domain.entities.audit_report import AuditReport
 
 
 class ScoreService:

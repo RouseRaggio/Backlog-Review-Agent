@@ -11,7 +11,7 @@ No conoce la IA.
 
 from __future__ import annotations
 
-from src.domain.models.issue import Issue
+from src.domain.entities.issue import Issue
 
 
 class JiraMapper:
