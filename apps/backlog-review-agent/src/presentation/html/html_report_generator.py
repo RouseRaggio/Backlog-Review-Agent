@@ -11,6 +11,19 @@ from pathlib import Path
 
 from src.domain.entities.audit_report import AuditReport
 
+RULE_DESCRIPTIONS = {
+    "BR-001": "Missing Issue Title",
+    "BR-002": "Story has no Description",
+    "BR-003": "Priority not assigned",
+    "BR-004": "No Assignee assigned",
+    "BR-005": "Not associated to a Sprint",
+    "BR-006": "Not associated to an Epic",
+    "BR-007": "Story Points not defined",
+    "BR-008": "Missing Acceptance Criteria",
+    "BR-009": "Status not assigned",
+    "BR-010": "Issue Type not assigned",
+}
+
 
 class HtmlReportGenerator:
 
@@ -24,8 +37,11 @@ class HtmlReportGenerator:
             / "report.html"
         )
 
-        print("Template:", self.template_path)
-        print("Existe:", self.template_path.exists())
+        self.chartjs_path = (
+            base_dir
+            / "templates"
+            / "chart.min.js"
+        )
 
         self.output_dir = Path("reports/latest")
 
@@ -33,6 +49,9 @@ class HtmlReportGenerator:
             parents=True,
             exist_ok=True,
         )
+
+    def _read_chartjs(self) -> str:
+        return self.chartjs_path.read_text(encoding="utf-8")
 
     def generate(self, report: AuditReport) -> Path:
         """
@@ -66,6 +85,15 @@ class HtmlReportGenerator:
             f"{report.quality_score:.2f}",
         )
 
+        total_issues = len(
+            {f.issue_key for f in report.findings}
+        )
+
+        template = template.replace(
+            "{{ISSUES_TOTAL}}",
+            str(total_issues),
+        )
+
         template = template.replace(
             "{{TOTAL}}",
             str(report.total_findings),
@@ -96,6 +124,11 @@ class HtmlReportGenerator:
             self._build_findings(report),
         )
 
+        template = template.replace(
+            "{{CHARTJS}}",
+            self._read_chartjs(),
+        )
+
         output_file = (
             self.output_dir /
             f"{report.project_key}_AUDIT.html"
@@ -123,21 +156,36 @@ class HtmlReportGenerator:
 
             severity = finding.severity or "-"
 
+            sev_badge = self._severity_badge(severity)
+
+            rule_desc = RULE_DESCRIPTIONS.get(
+                finding.rule_id, finding.rule_name
+            )
+
+            if finding.status == "FAIL":
+                display_desc = f"\u274c {rule_desc}"
+            elif finding.status == "WARNING":
+                display_desc = f"\u26a0\ufe0f {rule_desc}"
+            elif finding.status == "BLOCKED":
+                display_desc = f"\u26d4 {rule_desc}"
+            else:
+                display_desc = f"\u2705 {rule_desc}"
+
             rows.append(
                 f"""
-<tr data-status="{finding.status}" data-severity="{severity}">
+<tr data-status="{finding.status}" data-severity="{severity}" data-rule="{finding.rule_id}" data-issue="{finding.issue_key}" data-issue-type="{finding.issue_type}" data-rule-desc="{rule_desc}">
 
-<td>{finding.issue_key}</td>
+<td class="col-issue"><span class="issue-key">{finding.issue_key}</span></td>
 
-<td>{finding.rule_id}</td>
+<td class="col-type"><span class="issue-type-badge">{finding.issue_type}</span></td>
 
-<td>{badge}</td>
+<td class="col-status">{badge}</td>
 
-<td>{severity}</td>
+<td class="col-severity">{sev_badge}</td>
 
-<td>{finding.message}</td>
+<td class="col-rule">{display_desc}</td>
 
-<td>{finding.recommendation or "-"}</td>
+<td class="col-rec">{finding.recommendation or "-"}</td>
 
 </tr>
 """
@@ -158,5 +206,23 @@ class HtmlReportGenerator:
         return (
             f'<span class="{css}">'
             f'{status}'
+            f'</span>'
+        )
+
+    @staticmethod
+    def _severity_badge(severity: str) -> str:
+
+        css_map = {
+            "CRITICAL": "sev sev-critical",
+            "HIGH": "sev sev-high",
+            "MEDIUM": "sev sev-medium",
+            "LOW": "sev sev-low",
+        }
+
+        css = css_map.get(severity, "sev")
+
+        return (
+            f'<span class="{css}">'
+            f'{severity}'
             f'</span>'
         )

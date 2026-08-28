@@ -1,0 +1,47 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: test-case-generator-backend
+    ports:
+      - "8001:8000"
+    environment:
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:5174,http://127.0.0.1:5174,http://localhost:5175,http://127.0.0.1:5175,http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000}
+      - JIRA_URL=${JIRA_URL:-}
+      - JIRA_EMAIL=${JIRA_EMAIL:-}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN:-}
+      - JIRA_ACCEPTANCE_CRITERIA_FIELD=${JIRA_ACCEPTANCE_CRITERIA_FIELD:-}
+      - AI_PROVIDER=${AI_PROVIDER:-}
+      - AI_API_KEY=${AI_API_KEY:-}
+      - AI_MODEL=${AI_MODEL:-}
+
+    volumes:
+      - ./reports:/app/reports
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - test-case-generator-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: test-case-generator-frontend
+    ports:
+      - "5174:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - test-case-generator-network
+    restart: unless-stopped
+
+networks:
+  test-case-generator-network:
+    driver: bridge

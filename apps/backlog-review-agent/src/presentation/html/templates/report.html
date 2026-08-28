@@ -1,665 +1,1014 @@
-<!DOCTYPE html>
-<html lang="es">
-
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
-
-    <meta charset="UTF-8">
-
-    <title>Backlog Review Agent</title>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <style>
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-        }
-
-        body{
-
-            font-family:Segoe UI, Arial, Helvetica, sans-serif;
-
-            background:#f4f7fb;
-
-            color:#333;
-
-            padding:40px;
-
-        }
-
-        .container{
-
-            max-width:1400px;
-
-            margin:auto;
-
-        }
-
-        h1{
-
-            font-size:34px;
-
-            margin-bottom:10px;
-
-        }
-
-        h2{
-
-            margin-bottom:20px;
-
-        }
-
-        .subtitle{
-
-            color:#666;
-
-            margin-bottom:30px;
-
-        }
-
-        .card{
-
-            background:white;
-
-            border-radius:14px;
-
-            padding:25px;
-
-            margin-bottom:25px;
-
-            box-shadow:0 5px 20px rgba(0,0,0,.08);
-
-        }
-
-        .score{
-
-            text-align:center;
-
-        }
-
-        .score-value{
-
-            font-size:70px;
-
-            font-weight:bold;
-
-            color:#1E88E5;
-
-        }
-
-        .cards{
-
-            display:grid;
-
-            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-
-            gap:20px;
-
-        }
-
-        .metric{
-
-            background:#fafafa;
-
-            border-radius:12px;
-
-            padding:20px;
-
-            text-align:center;
-
-        }
-
-        .metric h3{
-
-            margin-bottom:15px;
-
-            color:#666;
-
-            font-size:15px;
-
-        }
-
-        .metric span{
-
-            font-size:38px;
-
-            font-weight:bold;
-
-        }
-
-        .pass{
-
-            color:#2E7D32;
-
-        }
-
-        .fail{
-
-            color:#D32F2F;
-
-        }
-
-        .warning{
-
-            color:#F57C00;
-
-        }
-
-        .blocked{
-
-            color:#757575;
-
-        }
-
-        table{
-
-            width:100%;
-
-            border-collapse:collapse;
-
-            margin-top:20px;
-
-        }
-
-        thead{
-
-            background:#1976D2;
-
-            color:white;
-
-        }
-
-        th{
-
-            padding:15px;
-
-            text-align:left;
-
-        }
-
-        td{
-
-            padding:14px;
-
-            border-bottom:1px solid #eee;
-
-        }
-
-        tbody tr:hover{
-
-            background:#f8fbff;
-
-        }
-
-        .badge{
-
-            padding:5px 10px;
-
-            border-radius:6px;
-
-            font-weight:bold;
-
-            color:white;
-
-        }
-
-        .badge-pass{
-
-            background:#2E7D32;
-
-        }
-
-        .badge-fail{
-
-            background:#D32F2F;
-
-        }
-
-        .badge-warning{
-
-            background:#F57C00;
-
-        }
-
-        .badge-blocked{
-
-            background:#757575;
-
-        }
-
-        .footer{
-
-            text-align:center;
-
-            margin-top:40px;
-
-            color:#999;
-
-            font-size:13px;
-
-        }
-
-        .toolbar{
-
-            display:flex;
-
-            flex-wrap:wrap;
-
-            gap:12px;
-
-            align-items:center;
-
-            margin-bottom:20px;
-
-        }
-
-        .toolbar .field{
-
-            display:flex;
-
-            flex-direction:column;
-
-            gap:4px;
-
-        }
-
-        .toolbar label{
-
-            font-size:12px;
-
-            color:#666;
-
-        }
-
-        .toolbar input[type="text"],
-        .toolbar select{
-
-            padding:8px 10px;
-
-            border:1px solid #ddd;
-
-            border-radius:8px;
-
-            font-size:14px;
-
-            background:white;
-
-            color:#333;
-
-        }
-
-        .toolbar input[type="text"]{
-
-            min-width:220px;
-
-        }
-
-        .toolbar .spacer{
-
-            flex:1;
-
-        }
-
-        .btn{
-
-            padding:9px 16px;
-
-            border-radius:8px;
-
-            border:none;
-
-            font-size:14px;
-
-            font-weight:bold;
-
-            cursor:pointer;
-
-            color:white;
-
-            background:#1976D2;
-
-        }
-
-        .btn:hover{
-
-            background:#155a9c;
-
-        }
-
-        .btn.secondary{
-
-            background:#546E7A;
-
-        }
-
-        .btn.secondary:hover{
-
-            background:#3f5259;
-
-        }
-
-        .results-count{
-
-            color:#666;
-
-            font-size:13px;
-
-            margin-bottom:10px;
-
-        }
-
-        .no-results td{
-
-            text-align:center;
-
-            padding:30px;
-
-            color:#999;
-
-        }
-
-        @media print{
-
-            .toolbar, .btn{
-
-                display:none !important;
-
-            }
-
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backlog Quality Dashboard - {{PROJECT}}</title>
+<style>
+:root {
+  --bg-primary: #2F4752;
+  --bg-secondary: #344E5A;
+  --bg-tertiary: #3B5663;
+  --card-bg: #3B5663;
+  --card-hover-bg: #456270;
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.3);
+  --accent-primary: #00C9C8;
+  --accent-primary-dark: #18D5D2;
+  --accent-primary-light: rgba(0,201,200,0.12);
+  --chart-highlight: #00E0B8;
+  --chart-dim: #607D8B;
+  --status-pass: #2ECC71;
+  --status-pass-bg: rgba(46,204,113,0.15);
+  --status-pass-text: #2ECC71;
+  --status-fail: #E74C3C;
+  --status-fail-bg: rgba(231,76,60,0.15);
+  --status-fail-text: #E74C3C;
+  --status-warning: #20C997;
+  --status-warning-bg: rgba(243,156,18,0.15);
+  --status-warning-text: #20C997;
+  --status-blocked: #7F8C8D;
+  --status-blocked-bg: rgba(127,140,141,0.15);
+  --status-blocked-text: #7F8C8D;
+  --sev-critical: #E74C3C;
+  --sev-critical-bg: rgba(231,76,60,0.15);
+  --sev-high: #20C997;
+  --sev-high-bg: rgba(243,156,18,0.15);
+  --sev-medium: #00C9C8;
+  --sev-medium-bg: rgba(0,201,200,0.12);
+  --sev-low: #61ee9b;
+  --sev-low-bg: rgba(46,204,113,0.15);
+  --text-primary: #FFFFFF;
+  --text-secondary: #C9D3D8;
+  --text-muted: #fcfeff;
+  --text-inverse: #FFFFFF;
+  --border-color: #49616D;
+  --border-light: rgba(73,97,109,0.3);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:var(--font-family);background:var(--bg-primary);color:var(--text-primary);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
+.container{max-width:1440px;margin:0 auto;padding:24px}
+.header{background:var(--card-bg);border-radius:var(--radius-xl);box-shadow:var(--card-shadow);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.header-left{display:flex;flex-direction:column;gap:4px}
+.header-left h1{font-size:20px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px;display:flex;align-items:center;gap:8px}
+.header-meta{font-size:12px;color:var(--text-secondary);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.header-meta strong{color:var(--text-primary)}
+.header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.header-score{display:flex;align-items:center;gap:8px;padding:4px 14px 4px 10px;background:var(--bg-secondary);border-radius:20px}
+.header-score .score-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.header-score .score-val{font-size:18px;font-weight:700}
+.header-score .score-lbl{font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:1px solid var(--border-color);font-size:12px;font-weight:500;font-family:var(--font-family);cursor:pointer;background:var(--card-bg);color:var(--text-primary);transition:all 0.15s;white-space:nowrap;text-decoration:none;line-height:1.4}
+.btn:hover{background:var(--bg-secondary);border-color:var(--text-muted);box-shadow:var(--card-shadow)}
+.btn-primary{background:var(--accent-primary);color:var(--text-inverse);border-color:var(--accent-primary)}
+.btn-primary:hover{background:var(--accent-primary-dark);border-color:var(--accent-primary-dark)}
+.kpi-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:1100px){.kpi-grid{grid-template-columns:1fr 1fr 1fr 1fr}}
+@media(max-width:700px){.kpi-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:450px){.kpi-grid{grid-template-columns:1fr 1fr}}
+.kpi-card{background:var(--card-bg);border-radius:var(--radius-lg);box-shadow:var(--card-shadow);padding:16px;display:flex;align-items:center;gap:12px;transition:box-shadow 0.2s,transform 0.15s}
+.kpi-card:hover{box-shadow:var(--card-shadow-hover);transform:translateY(-1px);background:var(--card-hover-bg)}
+.kpi-card.kpi-bqs{grid-column:1}
+.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kpi-icon svg{width:18px;height:18px}
+.kpi-icon.ic-score{background:var(--accent-primary-light);color:var(--accent-primary)}
+.kpi-icon.ic-issues{background:var(--accent-primary-light);color:var(--accent-primary)}
+.kpi-icon.ic-findings{background:var(--bg-tertiary);color:var(--text-secondary)}
+.kpi-icon.ic-pass{background:var(--status-pass-bg);color:var(--status-pass)}
+.kpi-icon.ic-fail{background:var(--status-fail-bg);color:var(--status-fail)}
+.kpi-icon.ic-warning{background:var(--status-warning-bg);color:var(--status-warning)}
+.kpi-icon.ic-blocked{background:var(--status-blocked-bg);color:var(--status-blocked)}
+.kpi-info{display:flex;flex-direction:column;min-width:0}
+.kpi-value{font-size:24px;font-weight:700;line-height:1.1;letter-spacing:-0.5px}
+.kpi-label{font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.4px;font-weight:500;margin-top:2px}
+.kpi-value.score{color:var(--accent-primary)}
+.kpi-value.pass{color:var(--status-pass)}
+.kpi-value.fail{color:var(--status-fail)}
+.kpi-value.warning{color:var(--status-warning)}
+.kpi-value.blocked{color:var(--status-blocked)}
+.charts-section{margin-bottom:20px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.charts-grid .full-width{grid-column:1/-1}
+@media(max-width:768px){.charts-grid{grid-template-columns:1fr}}
+.chart-card{background:var(--card-bg);border-radius:var(--radius-lg);box-shadow:var(--card-shadow);padding:18px;transition:box-shadow 0.2s}
+.chart-card:hover{box-shadow:var(--card-shadow-hover)}
+.chart-card h3{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.3px}
+.chart-card .chart-wrap{position:relative;width:100%;max-height:260px;display:flex;align-items:center;justify-content:center}
+.chart-card .chart-wrap.gauge-wrap{max-height:220px}
+.chart-card.hidden{display:none}
+.chart-card .chart-ph{display:flex;align-items:center;justify-content:center;padding:24px 16px;min-height:180px;text-align:center;flex-direction:column;gap:6px}
+.chart-card .chart-ph .ph-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:2px;background:var(--bg-tertiary);color:var(--text-secondary)}
+.chart-card .chart-ph .ph-icon svg{width:18px;height:18px}
+.chart-card .chart-ph .ph-value{font-size:26px;font-weight:700;color:var(--text-primary);line-height:1.2}
+.chart-card .chart-ph .ph-label{font-size:12px;color:var(--text-secondary)}
+.exec-summary{background:var(--card-bg);border-radius:var(--radius-lg);box-shadow:var(--card-shadow);padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.exec-summary .es-icon{width:44px;height:44px;border-radius:12px;background:var(--status-fail-bg);color:var(--status-fail);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.exec-summary .es-icon svg{width:22px;height:22px}
+.exec-summary .es-body{flex:1;min-width:200px}
+.exec-summary .es-label{font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.4px;font-weight:600;margin-bottom:2px}
+.exec-summary .es-rule{font-size:17px;font-weight:700;color:var(--text-primary);margin-bottom:2px}
+.exec-summary .es-meta{font-size:12px;color:var(--text-secondary)}
+.exec-summary .es-meta strong{color:var(--status-fail)}
+.main-layout{display:flex;gap:16px;margin-bottom:24px;align-items:flex-start}
+.main-layout .table-section{flex:1;min-width:0}
+.main-layout .panel-section{width:280px;flex-shrink:0}
+@media(max-width:1024px){.main-layout{flex-direction:column}.main-layout .panel-section{width:100%}}
+.table-card{background:var(--card-bg);border-radius:var(--radius-lg);box-shadow:var(--card-shadow);overflow:hidden}
+.table-card .table-header{padding:14px 18px 10px;border-bottom:1px solid var(--border-color);display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.table-card .table-header h2{font-size:14px;font-weight:600;color:var(--text-primary);white-space:nowrap}
+.table-card .table-header .spacer{flex:1}
+.filters-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters-row .filter-group{display:flex;flex-direction:column;gap:2px}
+.filters-row .filter-group label{font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;font-weight:600}
+.filters-row select,.filters-row input[type=text]{padding:5px 8px;border:1px solid var(--border-color);border-radius:6px;font-size:12px;font-family:var(--font-family);background:var(--card-bg);color:var(--text-primary);outline:none;transition:border-color 0.15s}
+.filters-row select:focus,.filters-row input[type=text]:focus{border-color:var(--accent-primary);box-shadow:0 0 0 2px var(--accent-primary-light)}
+.filters-row input[type=text]{min-width:160px}
+.results-count{font-size:11px;color:var(--text-secondary);padding:6px 18px;border-bottom:1px solid var(--border-color);background:var(--bg-secondary)}
+.table-wrap{overflow-x:auto;opacity:0;transition:opacity 0.2s}
+.table-wrap.ready{opacity:1}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead{position:sticky;top:0;z-index:10}
+thead th{background:var(--bg-secondary);color:var(--text-secondary);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;text-align:left;padding:8px 12px;border-bottom:2px solid var(--border-color);white-space:nowrap;cursor:pointer;user-select:none;position:relative}
+thead th .sort-arrow{display:inline-block;width:14px;margin-left:4px;font-size:9px;opacity:0.2;vertical-align:middle;transition:opacity 0.15s}
+thead th:hover .sort-arrow{opacity:0.5}
+thead th .sort-arrow.active{opacity:1;color:var(--accent-primary)}
+thead th.sorted{color:var(--accent-primary)}
+tbody tr{border-bottom:1px solid var(--border-light);transition:background 0.12s;cursor:pointer}
+tbody tr:nth-child(even){background:var(--bg-tertiary)}
+tbody tr:hover{background:var(--card-hover-bg)}
+tbody tr.detail-row{background:transparent;cursor:default}
+tbody tr.detail-row:hover{background:transparent}
+tbody tr.detail-row td{padding:0}
+tbody tr td{padding:8px 12px;vertical-align:middle}
+.col-issue .issue-key{font-weight:600;color:var(--accent-primary);font-size:12px}
+.col-type .issue-type-badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:9px;font-weight:600;background:var(--bg-tertiary);color:var(--text-secondary)}
+.no-results td{padding:24px 16px;text-align:center;color:var(--text-secondary);font-size:13px}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;letter-spacing:0.2px;line-height:1.4}
+.badge-pass{background:var(--status-pass-bg);color:var(--status-pass-text)}
+.badge-fail{background:var(--status-fail-bg);color:var(--status-fail-text)}
+.badge-warning{background:var(--status-warning-bg);color:var(--status-warning-text)}
+.badge-blocked{background:var(--status-blocked-bg);color:var(--status-blocked-text)}
+.sev{display:inline-block;padding:2px 7px;border-radius:8px;font-size:9px;font-weight:600;letter-spacing:0.2px;line-height:1.4}
+.sev-critical{background:var(--sev-critical-bg);color:var(--sev-critical)}
+.sev-high{background:var(--sev-high-bg);color:var(--sev-high)}
+.sev-medium{background:var(--sev-medium-bg);color:var(--sev-medium)}
+.sev-low{background:var(--sev-low-bg);color:var(--sev-low)}
+.rec-badge{display:inline-block;padding:1px 6px;border-radius:5px;font-size:8px;font-weight:600;letter-spacing:0.3px;line-height:1.5;vertical-align:middle}
+.rec-badge.critical{background:var(--sev-critical-bg);color:var(--sev-critical)}
+.rec-badge.high{background:var(--sev-high-bg);color:var(--sev-high)}
+.rec-badge.medium{background:var(--sev-medium-bg);color:var(--sev-medium)}
+.rec-badge.low{background:var(--sev-low-bg);color:var(--sev-low)}
+.detail-inner{padding:14px 18px 18px;background:var(--bg-secondary);border-bottom:2px solid var(--border-color)}
+.detail-inner .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-bottom:10px}
+.detail-inner .detail-field .df-label{font-size:9px;text-transform:uppercase;letter-spacing:0.3px;color:var(--text-secondary);font-weight:600;margin-bottom:1px}
+.detail-inner .detail-field .df-value{font-size:12px;color:var(--text-primary);word-break:break-word}
+.detail-inner .other-findings{margin-top:6px;padding-top:8px;border-top:1px solid var(--border-color)}
+.detail-inner .other-findings .of-title{font-size:10px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+.detail-inner .other-findings .of-item{font-size:11px;padding:2px 0;color:var(--text-primary);display:flex;align-items:center;gap:6px}
+.panel-card{background:var(--card-bg);border-radius:var(--radius-lg);box-shadow:var(--card-shadow);overflow:hidden}
+.panel-card .panel-head{padding:12px 16px;border-bottom:1px solid var(--border-color);font-size:13px;font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:8px}
+.panel-card .panel-body{padding:12px 16px}
+.panel-card .panel-section{margin-bottom:16px}
+.panel-card .panel-section:last-child{margin-bottom:0}
+.panel-card .panel-section h4{font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px}
+.rec-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border-light);font-size:12px;color:var(--text-primary)}
+.rec-item:last-child{border-bottom:none}
+.rec-item .rec-num{font-size:13px;font-weight:700;color:var(--status-fail);min-width:28px;text-align:right;flex-shrink:0;line-height:1.4}
+.rec-item .rec-body{flex:1;min-width:0}
+.rec-item .rec-body .rec-desc{display:block;color:var(--text-primary);line-height:1.4}
+.rec-item .rec-body .rec-meta{display:block;font-size:10px;color:var(--text-secondary);margin-top:1px}
+.panel-card .rec-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-light);font-size:12px;color:var(--text-primary)}
+.panel-card .rec-item:last-child{border-bottom:none}
+.panel-card .rec-item .rec-count{font-size:11px;font-weight:600;color:var(--status-fail);min-width:24px;text-align:right}
+.panel-card .rec-item .rec-label{flex:1}
+.panel-card .quick-wins .rec-item .rec-count{color:var(--status-pass)}
+.qw-item{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px;color:var(--text-primary)}
+.qw-item .qw-icon{width:18px;height:18px;border-radius:50%;background:var(--status-pass-bg);color:var(--status-pass);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qw-item .qw-icon svg{width:10px;height:10px}
+.qw-item .qw-label{flex:1}
+.qw-item .qw-count{font-size:11px;font-weight:600;color:var(--status-pass)}
+.pagination-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:10px 18px;border-top:1px solid var(--border-color);background:var(--bg-secondary)}
+.pagination-info{font-size:12px;color:var(--text-secondary)}
+.pagination-controls{display:flex;align-items:center;gap:2px}
+.pg-btn{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 8px;border:1px solid var(--border-color);border-radius:6px;background:var(--card-bg);color:var(--text-primary);font-size:12px;font-family:var(--font-family);cursor:pointer;transition:all 0.12s;line-height:1}
+.pg-btn:hover:not(:disabled):not(.active){background:var(--bg-tertiary);border-color:var(--text-muted)}
+.pg-btn.active{background:var(--accent-primary);color:var(--text-inverse);border-color:var(--accent-primary);font-weight:600}
+.pg-btn:disabled{opacity:0.35;cursor:default}
+.pg-btn.icon-btn{padding:0 10px;font-size:14px}
+.pg-gap{padding:0 4px;color:var(--text-secondary);font-size:12px;min-width:32px;text-align:center}
+.pagination-size{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary)}
+.pagination-size select{padding:4px 6px;border:1px solid var(--border-color);border-radius:6px;font-size:12px;font-family:var(--font-family);background:var(--card-bg);color:var(--text-primary);outline:none;cursor:pointer}
+.footer{text-align:center;padding:20px 0 10px;font-size:11px;color:var(--text-secondary)}
+@media(max-width:600px){.pagination-bar{flex-direction:column;align-items:stretch;gap:6px}.pagination-controls{justify-content:center}.pagination-info{text-align:center}.pagination-size{justify-content:center}.pg-btn.number{display:none}.pg-btn.icon-btn{display:inline-flex}.pg-btn.mobile-page{display:inline-flex;min-width:auto;padding:0 12px;font-size:12px}}
+@media print{body{background:var(--card-bg);padding:0}.container{padding:12px}.header-score,.header-right .btn{display:none!important}.kpi-grid{gap:8px;margin-bottom:12px}.kpi-card{box-shadow:none;border:1px solid var(--border-color);break-inside:avoid;padding:10px}.kpi-icon{width:28px;height:28px}.kpi-value{font-size:18px}.charts-section{page-break-before:always}.chart-card{box-shadow:none;border:1px solid var(--border-color);break-inside:avoid}.charts-grid{gap:10px}.table-card{box-shadow:none;border:1px solid var(--border-color)}thead th{background:var(--bg-tertiary)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.badge,.sev{-webkit-print-color-adjust:exact;print-color-adjust:exact}.panel-section{display:none!important}.main-layout .panel-section{display:none!important}.filters-row,.table-header .filters-row,.results-count,.btn{display:none!important}table{font-size:10px}tbody tr td{padding:4px 6px}.detail-inner{display:none!important}thead th{cursor:default}.pagination-bar{display:none!important}}
+</style>
 </head>
-
 <body>
-
 <div class="container">
-
-    <h1>🤖 Backlog Review Agent</h1>
-
-    <p class="subtitle">
-
-        Proyecto <strong>{{PROJECT}}</strong>
-
-        &nbsp;|&nbsp;
-
-        Generado: {{DATE}}
-
-    </p>
-
-    <div class="toolbar">
-
-        <button class="btn" id="downloadHtmlBtn" type="button">⬇️ Descargar HTML</button>
-
-        <button class="btn secondary" id="printBtn" type="button">🖨️ Imprimir / PDF</button>
-
-    </div>
-
-    <div class="card score">
-
-        <h2>Backlog Quality Score</h2>
-
-        <div class="score-value">
-
-            {{SCORE}}%
-
-        </div>
-
-    </div>
-
-    <div class="card">
-
-        <h2>Resumen</h2>
-
-        <div class="cards">
-
-            <div class="metric">
-
-                <h3>Hallazgos</h3>
-
-                <span>{{TOTAL}}</span>
-
-            </div>
-
-            <div class="metric">
-
-                <h3>PASS</h3>
-
-                <span class="pass">{{PASS}}</span>
-
-            </div>
-
-            <div class="metric">
-
-                <h3>FAIL</h3>
-
-                <span class="fail">{{FAIL}}</span>
-
-            </div>
-
-            <div class="metric">
-
-                <h3>WARNING</h3>
-
-                <span class="warning">{{WARNING}}</span>
-
-            </div>
-
-            <div class="metric">
-
-                <h3>BLOCKED</h3>
-
-                <span class="blocked">{{BLOCKED}}</span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="card">
-
-        <h2>Detalle de Hallazgos</h2>
-
-        <div class="toolbar">
-
-            <div class="field">
-
-                <label for="searchInput">Buscar</label>
-
-                <input type="text" id="searchInput" placeholder="Issue, mensaje...">
-
-            </div>
-
-            <div class="field">
-
-                <label for="statusFilter">Estado</label>
-
-                <select id="statusFilter">
-
-                    <option value="">Todos</option>
-
-                    <option value="PASS">PASS</option>
-
-                    <option value="FAIL">FAIL</option>
-
-                    <option value="WARNING">WARNING</option>
-
-                    <option value="BLOCKED">BLOCKED</option>
-
-                </select>
-
-            </div>
-
-            <div class="field">
-
-                <label for="severityFilter">Severidad</label>
-
-                <select id="severityFilter">
-
-                    <option value="">Todas</option>
-
-                </select>
-
-            </div>
-
-            <div class="spacer"></div>
-
-            <button class="btn secondary" id="clearFiltersBtn" type="button">✖ Limpiar filtros</button>
-
-        </div>
-
-        <p class="results-count" id="resultsCount"></p>
-
-        <table>
-
-            <thead>
-
-            <tr>
-
-                <th>Issue</th>
-
-                <th>Regla</th>
-
-                <th>Estado</th>
-
-                <th>Severidad</th>
-
-                <th>Mensaje</th>
-
-                <th>Recomendación</th>
-
-            </tr>
-
-            </thead>
-
-            <tbody>
-
-                {{FINDINGS}}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-    <div class="footer">
-
-        Backlog Review Agent • AI-QA-Agents
-
-    </div>
-
+<header class="header">
+<div class="header-left">
+<h1>
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+Backlog Quality Dashboard
+</h1>
+<div class="header-meta">
+<strong>{{PROJECT}}</strong>
+<span class="sep">&#183;</span>
+Generated: {{DATE}}
 </div>
-
+</div>
+<div class="header-right">
+<div class="header-score">
+<span class="score-dot" id="headerScoreDot" style="background:var(--accent-primary)"></span>
+<span class="score-val" id="headerScoreVal">{{SCORE}}%</span>
+<span class="score-lbl">BQS</span>
+</div>
+<button class="btn" id="downloadBtn">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+Export HTML
+</button>
+<button class="btn btn-primary" id="printBtn">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+Print / PDF
+</button>
+</div>
+</header>
+<section class="kpi-grid">
+<div class="kpi-card kpi-bqs">
+<div class="kpi-icon ic-score">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+</div>
+<div class="kpi-info">
+<div class="kpi-value score">{{SCORE}}%</div>
+<div class="kpi-label">Backlog Quality Score</div>
+</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-icon ic-issues">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+</div>
+<div class="kpi-info">
+<div class="kpi-value">{{ISSUES_TOTAL}}</div>
+<div class="kpi-label">Total Issues</div>
+</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-icon ic-findings">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+</div>
+<div class="kpi-info">
+<div class="kpi-value">{{TOTAL}}</div>
+<div class="kpi-label">Total Findings</div>
+</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-icon ic-pass">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+</div>
+<div class="kpi-info">
+<div class="kpi-value pass">{{PASS}}</div>
+<div class="kpi-label">PASS</div>
+</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-icon ic-fail">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+</div>
+<div class="kpi-info">
+<div class="kpi-value fail">{{FAIL}}</div>
+<div class="kpi-label">FAIL</div>
+</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-icon ic-warning">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+</div>
+<div class="kpi-info">
+<div class="kpi-value warning">{{WARNING}}</div>
+<div class="kpi-label">WARNING</div>
+</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-icon ic-blocked">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+</div>
+<div class="kpi-info">
+<div class="kpi-value blocked">{{BLOCKED}}</div>
+<div class="kpi-label">BLOCKED</div>
+</div>
+</div>
+</section>
+<section class="charts-section">
+<div class="charts-grid">
+<div class="chart-card" id="chart-dist">
+<h3>Backlog Quality Distribution</h3>
+<div class="chart-wrap"><canvas id="distChart"></canvas></div>
+</div>
+<div class="chart-card" id="chart-rules">
+<h3>Top Failed Rules</h3>
+<div class="chart-wrap"><canvas id="rulesChart"></canvas></div>
+</div>
+<div class="chart-card" id="chart-type">
+<h3>Findings by Issue Type</h3>
+<div class="chart-wrap"><canvas id="typeChart"></canvas></div>
+</div>
+<div class="chart-card" id="chart-issues">
+<h3>Worst Quality Issues</h3>
+<div class="chart-wrap"><canvas id="issuesChart"></canvas></div>
+</div>
+<div class="chart-card full-width" id="chart-gauge">
+<h3>Backlog Quality Gauge</h3>
+<div class="chart-wrap gauge-wrap"><canvas id="gaugeChart"></canvas></div>
+</div>
+</div>
+</section>
+<div class="exec-summary" id="execSummary">
+<div class="es-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+</div>
+<div class="es-body" id="execSummaryBody">
+<div class="es-label">Most Common Failure</div>
+<div class="es-rule" id="execRule">Loading...</div>
+<div class="es-meta" id="execMeta"></div>
+</div>
+</div>
+<div class="main-layout">
+<div class="table-section">
+<div class="table-card">
+<div class="table-header">
+<h2>Findings</h2>
+<div class="spacer"></div>
+<div class="filters-row">
+<div class="filter-group">
+<label for="searchInput">Search</label>
+<input type="text" id="searchInput" placeholder="Issue, rule, recommendation...">
+</div>
+<div class="filter-group">
+<label for="statusFilter">Status</label>
+<select id="statusFilter">
+<option value="">All</option>
+<option value="PASS">PASS</option>
+<option value="FAIL">FAIL</option>
+<option value="WARNING">WARNING</option>
+<option value="BLOCKED">BLOCKED</option>
+</select>
+</div>
+<div class="filter-group">
+<label for="severityFilter">Severity</label>
+<select id="severityFilter">
+<option value="">All</option>
+</select>
+</div>
+<button class="btn" id="clearFiltersBtn" style="margin-top:14px">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+Clear
+</button>
+</div>
+</div>
+<div class="results-count" id="resultsCount"></div>
+<div class="table-wrap" id="tableWrap">
+<table>
+<thead>
+<tr>
+            <th data-col="0">Issue<span class="sort-arrow"></span></th>
+            <th data-col="1">Type<span class="sort-arrow"></span></th>
+            <th data-col="2">Status<span class="sort-arrow"></span></th>
+            <th data-col="3">Severity<span class="sort-arrow"></span></th>
+            <th data-col="4">Rule Description<span class="sort-arrow"></span></th>
+            <th data-col="5">Recommendation<span class="sort-arrow"></span></th>
+</tr>
+</thead>
+<tbody>
+{{FINDINGS}}
+</tbody>
+</table>
+    </div>
+    <div class="pagination-bar" id="paginationBar">
+    <div class="pagination-info" id="paginationInfo"></div>
+    <div class="pagination-controls" id="paginationControls"></div>
+    <div class="pagination-size">
+    <label>Rows:</label>
+    <select id="pageSizeSelect">
+    <option value="10">10</option>
+    <option value="25" selected>25</option>
+    <option value="50">50</option>
+    <option value="100">100</option>
+    <option value="0">All</option>
+    </select>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="panel-section">
+<div class="panel-card">
+<div class="panel-head">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+Top Improvement Opportunities
+</div>
+<div class="panel-body" id="recPanel">
+<div class="panel-section" id="recSection">
+<h4>By Priority</h4>
+<div id="recList"><div style="font-size:12px;color:var(--text-secondary)">Loading...</div></div>
+</div>
+<div class="panel-section">
+<h4>Quick Wins</h4>
+<div id="quickWins"><div style="font-size:12px;color:var(--text-secondary)">Loading...</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+Backlog Review Agent &bull; AI-QA-Agents
+</div>
+</div>
+<script>{{CHARTJS}}</script>
 <script>
-(function () {
-    const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
-    const severityFilter = document.getElementById('severityFilter');
-    const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-    const resultsCount = document.getElementById('resultsCount');
-    const tbody = document.querySelector('table tbody');
-    const downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
-    const printBtn = document.getElementById('printBtn');
+(function() {
+const tbody = document.querySelector('table tbody');
+const allRows = tbody ? Array.from(tbody.querySelectorAll('tr[data-status]')) : [];
+const searchInput = document.getElementById('searchInput');
+const statusFilter = document.getElementById('statusFilter');
+const severityFilter = document.getElementById('severityFilter');
+const clearBtn = document.getElementById('clearFiltersBtn');
+const resultsCount = document.getElementById('resultsCount');
+const tableWrap = document.getElementById('tableWrap');
+const downloadBtn = document.getElementById('downloadBtn');
+const printBtn = document.getElementById('printBtn');
+const paginationControls = document.getElementById('paginationControls');
+const paginationInfo = document.getElementById('paginationInfo');
+const pageSizeSelect = document.getElementById('pageSizeSelect');
+const projectName = '{{PROJECT}}';
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim()}
 
-    if (!tbody) return;
+const state = { page: 1, pageSize: 25, sortCol: -1, sortDir: 'asc' };
+const statusOrder = { PASS: 0, WARNING: 1, FAIL: 2, BLOCKED: 3 };
+const severityOrder = { LOW: 0, MEDIUM: 1, HIGH: 2, CRITICAL: 3 };
 
-    const rows = Array.from(tbody.querySelectorAll('tr'));
+// ---- Data helpers ----
+function getSeverities() {
+return [...new Set(allRows.map(r=>r.dataset.severity).filter(s=>s&&s!='-'))].sort();
+}
 
-    const severities = Array.from(
-        new Set(rows.map(r => r.dataset.severity).filter(s => s && s !== '-'))
-    ).sort();
+function collectAll() {
+const d = { status:{}, severity:{}, rules:{}, issues:{}, types:{}, issueFails:{} };
+allRows.forEach(r => {
+const st = r.dataset.status, sv = r.dataset.severity, ru = r.dataset.rule;
+const rd = r.dataset.ruleDesc, is = r.dataset.issue, it = r.dataset.issueType;
+d.status[st] = (d.status[st]||0) + 1;
+if (sv && sv !== '-') d.severity[sv] = (d.severity[sv]||0) + 1;
+if (!d.issueFails[is]) {
+d.issueFails[is] = { type: it || '', failCount: 0, totalCount: 0, hasCritical: false, hasHigh: false };
+}
+d.issueFails[is].totalCount++;
+if (st === 'FAIL') {
+if (!d.rules[ru]) d.rules[ru] = {desc:rd||ru,count:0,maxSev:'LOW'};
+d.rules[ru].count++;
+const so = {CRITICAL:4,HIGH:3,MEDIUM:2,LOW:1};
+if (so[sv] > (so[d.rules[ru].maxSev]||0)) d.rules[ru].maxSev = sv;
+d.issueFails[is].failCount++;
+if (sv === 'CRITICAL') d.issueFails[is].hasCritical = true;
+if (sv === 'HIGH') d.issueFails[is].hasHigh = true;
+}
+d.issues[is] = (d.issues[is]||0) + 1;
+d.types[it] = (d.types[it]||0) + 1;
+});
+return d;
+}
 
-    severities.forEach(sev => {
-        const opt = document.createElement('option');
-        opt.value = sev;
-        opt.textContent = sev;
-        severityFilter.appendChild(opt);
-    });
+function getCellValue(row, col) {
+const cell = row.cells[col];
+if (!cell) return '';
+if (col === 0) { const k = cell.querySelector('.issue-key'); return k ? k.textContent.trim() : cell.textContent.trim(); }
+if (col === 1) { const b = cell.querySelector('.issue-type-badge'); return b ? b.textContent.trim() : cell.textContent.trim(); }
+if (col === 2) { const b = cell.querySelector('.badge'); return b ? b.textContent.trim() : cell.textContent.trim(); }
+if (col === 3) { const s = cell.querySelector('.sev'); return s ? s.textContent.trim() : cell.textContent.trim(); }
+return cell.textContent.trim();
+}
 
-    let noResultsRow = null;
+function compareValues(a, b, col) {
+if (col === 2) { const oa = statusOrder[a] ?? 99; const ob = statusOrder[b] ?? 99; return oa - ob; }
+if (col === 3) { const oa = severityOrder[a] ?? 99; const ob = severityOrder[b] ?? 99; return oa - ob; }
+return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+}
 
-    function ensureNoResultsRow() {
-        if (!noResultsRow) {
-            noResultsRow = document.createElement('tr');
-            noResultsRow.className = 'no-results';
-            const td = document.createElement('td');
-            td.colSpan = 6;
-            td.textContent = 'No se encontraron hallazgos con los filtros aplicados.';
-            noResultsRow.appendChild(td);
+// ---- Charts ----
+let charts = {};
+
+function showPlaceholder(chartEl, value, label) {
+const wrap = chartEl.querySelector('.chart-wrap');
+if (!wrap) return;
+const c = wrap.querySelector('canvas');
+if (c) c.style.display = 'none';
+let ph = wrap.querySelector('.chart-ph');
+if (!ph) {
+ph = document.createElement('div');
+ph.className = 'chart-ph';
+ph.innerHTML = '<div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="ph-value"></div><div class="ph-label"></div>';
+wrap.appendChild(ph);
+}
+ph.querySelector('.ph-value').textContent = value;
+ph.querySelector('.ph-label').textContent = label;
+}
+
+function buildCharts() {
+destroyCharts();
+const d = collectAll();
+const statusColors = {PASS:cssVar('--status-pass'),FAIL:cssVar('--status-fail'),WARNING:cssVar('--status-warning'),BLOCKED:cssVar('--status-blocked')};
+const score = parseFloat('{{SCORE}}') || 0;
+const gaugeColor = score >= 80 ? cssVar('--status-pass') : score >= 50 ? cssVar('--status-warning') : cssVar('--status-fail');
+
+// 1. Distribution Doughnut
+const c1 = document.getElementById('chart-dist');
+const ctx1 = document.getElementById('distChart');
+if (c1 && ctx1) {
+const labels = Object.keys(d.status);
+if (labels.length >= 2) {
+c1.classList.remove('hidden'); ctx1.style.display = '';
+charts.dist = new Chart(ctx1, {type:'doughnut',data:{labels,datasets:[{data:labels.map(k=>d.status[k]),backgroundColor:labels.map(k=>statusColors[k]||cssVar('--text-muted')),borderWidth:0,borderRadius:2}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'right',labels:{boxWidth:12,font:{size:10}}}}}});
+} else { c1.classList.add('hidden'); }
+}
+
+// 2. Top Failed Rules
+const c2 = document.getElementById('chart-rules');
+const ctx2 = document.getElementById('rulesChart');
+if (c2 && ctx2) {
+const entries = Object.entries(d.rules).sort((a,b)=>b[1].count-a[1].count).slice(0,8);
+if (entries.length > 1) {
+c2.classList.remove('hidden'); ctx2.style.display = '';
+charts.rules = new Chart(ctx2, {type:'bar',data:{labels:entries.map(e=>e[1].desc),datasets:[{data:entries.map(e=>e[1].count),backgroundColor:entries.map(e=>{const m={CRITICAL:cssVar('--sev-critical'),HIGH:cssVar('--sev-high'),MEDIUM:cssVar('--sev-medium'),LOW:cssVar('--sev-low')}[e[1].maxSev];return m||cssVar('--status-fail')}),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{
+    x:{
+        beginAtZero:true,
+        grid:{
+            color:"rgba(255,255,255,0.08)"
+        },
+        ticks:{
+            color:"#D4DEE3",
+            font:{
+                size:11
+            }
         }
-        return noResultsRow;
-    }
-
-    function applyFilters() {
-        const term = searchInput.value.trim().toLowerCase();
-        const status = statusFilter.value;
-        const severity = severityFilter.value;
-
-        let visibleCount = 0;
-
-        rows.forEach(row => {
-            const matchesStatus = !status || row.dataset.status === status;
-            const matchesSeverity = !severity || row.dataset.severity === severity;
-            const matchesTerm = !term || row.textContent.toLowerCase().includes(term);
-            const visible = matchesStatus && matchesSeverity && matchesTerm;
-
-            row.style.display = visible ? '' : 'none';
-
-            if (visible) visibleCount++;
-        });
-
-        const emptyRow = ensureNoResultsRow();
-
-        if (visibleCount === 0) {
-            if (!emptyRow.isConnected) tbody.appendChild(emptyRow);
-        } else if (emptyRow.isConnected) {
-            emptyRow.remove();
+    },
+    y:{
+        grid:{
+            display:false
+        },
+        ticks:{
+            color:"#E8EEF2",
+            font:{
+                size:11,
+                weight:"500"
+            }
         }
-
-        resultsCount.textContent = `Mostrando ${visibleCount} de ${rows.length} hallazgos`;
     }
+}}}); 
+} else if (entries.length === 1) {
+c2.classList.remove('hidden'); showPlaceholder(c2, entries[0][1].count, entries[0][1].desc);
+} else { c2.classList.add('hidden'); }
+}
 
-    searchInput.addEventListener('input', applyFilters);
-    statusFilter.addEventListener('change', applyFilters);
-    severityFilter.addEventListener('change', applyFilters);
+// 3. Findings by Issue Type
+const c3 = document.getElementById('chart-type');
+const ctx3 = document.getElementById('typeChart');
+if (c3 && ctx3) {
+const entries = Object.entries(d.types).sort((a,b)=>b[1]-a[1]);
+if (entries.length > 1) {
+c3.classList.remove('hidden'); ctx3.style.display = '';
+charts.type = new Chart(ctx3, {type:'bar',data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:cssVar('--chart-highlight'),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{
+    x:{
+        beginAtZero:true,
+        grid:{
+            color:"rgba(255,255,255,0.08)"
+        },
+        ticks:{
+            color:"#D4DEE3",
+            font:{
+                size:11
+            }
+        }
+    },
+    y:{
+        grid:{
+            display:false
+        },
+        ticks:{
+            color:"#E8EEF2",
+            font:{
+                size:11,
+                weight:"500"
+            }
+        }
+    }
+}}});
+} else if (entries.length === 1) {
+c3.classList.remove('hidden'); showPlaceholder(c3, entries[0][1], entries[0][0] + ' findings');
+} else { c3.classList.add('hidden'); }
+}
 
-    clearFiltersBtn.addEventListener('click', () => {
-        searchInput.value = '';
-        statusFilter.value = '';
-        severityFilter.value = '';
-        applyFilters();
-    });
+// 4. Worst Quality Issues
+const c4 = document.getElementById('chart-issues');
+const ctx4 = document.getElementById('issuesChart');
+if (c4 && ctx4) {
+let entries = Object.entries(d.issueFails);
+entries.sort((a,b) => {
+if (b[1].failCount !== a[1].failCount) return b[1].failCount - a[1].failCount;
+return a[0].localeCompare(b[0]);
+});
+entries = entries.slice(0,10);
+if (entries.length > 0 && entries[0][1].failCount > 0) {
+c4.classList.remove('hidden'); ctx4.style.display = '';
+charts.issues = new Chart(ctx4, {type:'bar',data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1].failCount),backgroundColor:cssVar('--accent-primary'),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){const e=entries.find(i=>i[0]===ctx.label)[1];return 'Failed rules: '+e.failCount},afterLabel:function(ctx){const e=entries.find(i=>i[0]===ctx.label)[1];const p=e.totalCount-e.failCount;const pct=e.totalCount>0?Math.round(p/e.totalCount*100):0;return['Passed: '+pct+'%','BQS: '+Math.round(score)+'%']}}}},scales:{
+    x:{
+        beginAtZero:true,
+        grid:{
+            color:"rgba(255,255,255,0.08)"
+        },
+        ticks:{
+            color:"#D4DEE3",
+            font:{
+                size:11
+            }
+        },
+        title:{
+            display:true,
+            text:'Failed Quality Rules',
+            color:cssVar('--text-secondary'),
+            font:{size:10,weight:'600'}
+        }
+    },
+    y:{
+        grid:{
+            display:false
+        },
+        ticks:{
+            color:"#E8EEF2",
+            font:{
+                size:11,
+                weight:"500"
+            }
+        }
+    }
+}}});  
+} else { c4.classList.add('hidden'); }
+}
 
-    printBtn.addEventListener('click', () => window.print());
+// 5. BQS Gauge
+const ctx5 = document.getElementById('gaugeChart');
+if (ctx5) {
+charts.gauge = new Chart(ctx5, {type:'doughnut',data:{datasets:[{data:[score,100-score],backgroundColor:[gaugeColor,cssVar('--chart-dim')],borderWidth:0,cutout:'85%',circumference:180,rotation:-90}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{enabled:false}}},plugins:[{id:'gaugeText',afterDraw(c){const {ctx:w,chartArea:a}=c;const cx=(a.left+a.right)/2;const cy=a.bottom-12;w.save();w.font='bold 32px '+cssVar('--font-family');w.fillStyle=gaugeColor;w.textAlign='center';w.textBaseline='middle';w.fillText(Math.round(score)+'%',cx,cy-4);w.font='11px '+cssVar('--font-family');w.fillStyle=cssVar('--text-secondary');w.fillText('BQS',cx,cy+16);w.restore()}}]});
+}
 
-    downloadHtmlBtn.addEventListener('click', () => {
-        const doc = document.documentElement.cloneNode(true);
+// Header score
+const hDot = document.getElementById('headerScoreDot');
+const hVal = document.getElementById('headerScoreVal');
+if (hDot) hDot.style.background = gaugeColor;
+if (hVal) hVal.textContent = Math.round(score) + '%';
 
-        doc.querySelectorAll('.toolbar, .no-results').forEach(el => el.remove());
-        doc.querySelectorAll('table tbody tr').forEach(row => row.style.display = '');
+// 6. Executive Summary
+const execRule = document.getElementById('execRule');
+const execMeta = document.getElementById('execMeta');
+const execBody = document.getElementById('execSummaryBody');
+if (execRule && execMeta) {
+const rules = Object.entries(d.rules).sort((a,b)=>b[1].count-a[1].count);
+if (rules.length > 0) {
+const top = rules[0][1];
+const totalFail = Object.values(d.rules).reduce((s,r)=>s+r.count,0);
+const pct = totalFail > 0 ? Math.round(top.count / totalFail * 100) : 0;
+execRule.textContent = top.desc;
+execMeta.innerHTML = '<strong>' + top.count + '</strong> issues &middot; <strong>' + pct + '%</strong> of all FAIL findings';
+} else {
+execRule.textContent = 'No failures found';
+execMeta.innerHTML = 'All quality rules are passing';
+}
+}
+}
 
-        const html = '<!DOCTYPE html>\n' + doc.outerHTML;
-        const blob = new Blob([html], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const project = '{{PROJECT}}'.replace(/[^a-z0-9_-]+/gi, '_');
+function destroyCharts() { Object.values(charts).forEach(c=>c&&c.destroy()); charts={}; }
 
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${project}_AUDIT.html`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-    });
+function buildRecPanel() {
+const d = collectAll();
+const rules = Object.entries(d.rules).sort((a,b) => {
+const so = {CRITICAL:4,HIGH:3,MEDIUM:2,LOW:1};
+const sa = so[a[1].maxSev]||0, sb = so[b[1].maxSev]||0;
+if (sb !== sa) return sb - sa;
+return b[1].count - a[1].count;
+});
+const totalFail = Object.values(d.rules).reduce((s,r)=>s+r.count,0);
 
-    applyFilters();
+const recList = document.getElementById('recList');
+if (recList) {
+if (rules.length === 0) { recList.innerHTML='<div style="font-size:12px;color:var(--text-secondary)">No failures found</div>'; }
+else {
+recList.innerHTML = rules.map(e => {
+const pct = totalFail > 0 ? Math.round(e[1].count / totalFail * 100) : 0;
+const badge = '<span class="rec-badge ' + e[1].maxSev.toLowerCase() + '">' + e[1].maxSev + '</span>';
+return '<div class="rec-item"><span class="rec-num">' + e[1].count + '</span><div class="rec-body"><span class="rec-desc">' + e[1].desc + badge + '</span><span class="rec-meta">' + pct + '% of failures</span></div></div>';
+}).join('');
+}
+}
+
+const quickDiv = document.getElementById('quickWins');
+if (quickDiv) {
+const qw = Object.entries(d.rules).filter(e => ['LOW','MEDIUM'].includes(e[1].maxSev)).sort((a,b)=>b[1].count-a[1].count).slice(0,4);
+if (qw.length === 0) { quickDiv.innerHTML='<div style="font-size:12px;color:var(--text-secondary)">No quick wins identified</div>'; }
+else {
+quickDiv.innerHTML = qw.map(e => '<div class="qw-item"><div class="qw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><span class="qw-label">' + e[1].desc + '</span><span class="qw-count">' + e[1].count + '</span></div>').join('');
+}
+}
+}
+
+// ---- Expandable rows ----
+function buildDetailRow(row) {
+const issue = row.dataset.issue;
+const related = allRows.filter(r => r.dataset.issue === issue);
+const st = row.dataset.status || '';
+const sv = row.dataset.severity || '';
+const it = row.dataset.issueType || '';
+const recCell = row.cells ? row.cells[row.cells.length-1].textContent : '';
+const rec = recCell && recCell !== '-' ? recCell : '';
+const otherFindings = related.filter(r => r !== row).map(r => '<div class="of-item"><span class="badge badge-' + r.dataset.status.toLowerCase() + '">' + r.dataset.status + '</span> ' + (r.dataset.ruleDesc||r.dataset.rule) + '</div>').join('');
+const dr = document.createElement('tr');
+dr.className = 'detail-row';
+dr.innerHTML = '<td colspan="6"><div class="detail-inner"><div class="detail-grid"><div class="detail-field"><div class="df-label">Issue</div><div class="df-value">' + issue + '</div></div><div class="detail-field"><div class="df-label">Type</div><div class="df-value">' + it + '</div></div><div class="detail-field"><div class="df-label">Status</div><div class="df-value"><span class="badge badge-' + st.toLowerCase() + '">' + st + '</span></div></div><div class="detail-field"><div class="df-label">Severity</div><div class="df-value"><span class="sev sev-' + sv.toLowerCase() + '">' + sv + '</span></div></div></div>' + (rec ? '<div class="detail-field" style="margin-bottom:8px"><div class="df-label">Recommendation</div><div class="df-value">' + rec + '</div></div>' : '') + (otherFindings ? '<div class="other-findings"><div class="of-title">All findings for ' + issue + ' (' + related.length + ')</div>' + otherFindings + '</div>' : '') + '</div></td>';
+row.parentNode.insertBefore(dr, row.nextSibling);
+row.classList.add('active');
+}
+
+function toggleDetail(row) {
+const detail = row.nextElementSibling;
+if (detail && detail.classList.contains('detail-row')) { detail.remove(); row.classList.remove('active'); return; }
+document.querySelectorAll('.detail-row').forEach(el => { el.previousElementSibling.classList.remove('active'); el.remove(); });
+buildDetailRow(row);
+}
+
+tbody.addEventListener('click', function(e) {
+const row = e.target.closest('tr[data-status]');
+if (row) toggleDetail(row);
+});
+
+// ---- Table render ----
+function renderTable() {
+document.querySelectorAll('.detail-row').forEach(el => el.remove());
+
+const term = searchInput.value.trim().toLowerCase();
+const status = statusFilter.value;
+const severity = severityFilter.value;
+
+let filtered = allRows.filter(r => {
+return (!status || r.dataset.status === status) && (!severity || r.dataset.severity === severity) && (!term || r.textContent.toLowerCase().includes(term));
+});
+
+if (state.sortCol >= 0) {
+filtered.sort((a, b) => {
+const va = getCellValue(a, state.sortCol);
+const vb = getCellValue(b, state.sortCol);
+const cmp = compareValues(va, vb, state.sortCol);
+return state.sortDir === 'asc' ? cmp : -cmp;
+});
+}
+
+const total = filtered.length;
+const ps = state.pageSize === 0 ? total : state.pageSize;
+const tp = Math.max(1, Math.ceil(total / ps));
+if (state.page > tp) state.page = tp;
+if (state.page < 1) state.page = 1;
+const start = (state.page - 1) * ps;
+const pageRows = filtered.slice(start, start + ps);
+
+allRows.forEach(r => r.remove());
+const nr = tbody.querySelector('.no-results');
+if (nr) nr.remove();
+
+if (pageRows.length === 0) {
+const empty = document.createElement('tr');
+empty.className = 'no-results';
+const td = document.createElement('td');
+td.colSpan = 6;
+td.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="'+cssVar('--border-color')+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><br>No findings match the current filters.';
+empty.appendChild(td);
+tbody.appendChild(empty);
+} else {
+pageRows.forEach(r => tbody.appendChild(r));
+}
+
+updatePaginationUI(total, tp, start, pageRows.length);
+updateSortIndicators();
+}
+
+function updateSortIndicators() {
+document.querySelectorAll('thead th .sort-arrow').forEach(el => { el.textContent = ''; el.className = 'sort-arrow'; });
+if (state.sortCol >= 0) {
+const th = document.querySelector('thead th[data-col="' + state.sortCol + '"]');
+if (th) {
+const arrow = th.querySelector('.sort-arrow');
+if (arrow) { arrow.textContent = state.sortDir === 'asc' ? '\u25B2' : '\u25BC'; arrow.className = 'sort-arrow active'; }
+th.classList.add('sorted');
+}
+}
+}
+
+function updatePaginationUI(total, totalPages, start, count) {
+if (total === 0) {
+paginationInfo.textContent = 'No findings match the current filters.';
+paginationControls.innerHTML = '';
+resultsCount.textContent = '0 findings';
+return;
+}
+
+const end = Math.min(start + count, total);
+const statusLabel = statusFilter.value ? statusFilter.value + ' ' : '';
+paginationInfo.textContent = 'Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' ' + statusLabel + 'findings';
+resultsCount.textContent = 'Page ' + state.page + ' of ' + totalPages + ' (' + total + ' findings)';
+
+if (state.pageSize === 0) { paginationControls.innerHTML = ''; return; }
+
+const maxPages = window.innerWidth <= 600 ? 0 : 5;
+const isMobile = window.innerWidth <= 600;
+let html = '';
+
+const prevDisabled = state.page <= 1;
+const nextDisabled = state.page >= totalPages;
+
+html += '<button class="pg-btn icon-btn" data-page="1"' + (prevDisabled ? ' disabled' : '') + ' title="First page">\u00AB</button>';
+html += '<button class="pg-btn icon-btn" data-page="' + (state.page - 1) + '"' + (prevDisabled ? ' disabled' : '') + ' title="Previous page">\u2039</button>';
+
+if (isMobile) {
+html += '<span class="pg-btn mobile-page" style="border:none;background:transparent;cursor:default">Page ' + state.page + ' of ' + totalPages + '</span>';
+} else {
+const pages = [];
+if (totalPages <= maxPages + 2) {
+for (let i = 1; i <= totalPages; i++) pages.push(i);
+} else {
+const half = Math.floor(maxPages / 2);
+let s = Math.max(1, state.page - half);
+let e = Math.min(totalPages, state.page + half);
+if (s <= 2) { e = Math.min(totalPages, maxPages); s = 1; }
+if (e >= totalPages - 1) { s = Math.max(1, totalPages - maxPages + 1); e = totalPages; }
+if (s > 1) { pages.push(1); if (s > 2) pages.push('...'); }
+for (let i = s; i <= e; i++) pages.push(i);
+if (e < totalPages) { if (e < totalPages - 1) pages.push('...'); pages.push(totalPages); }
+}
+pages.forEach(p => {
+if (p === '...') { html += '<span class="pg-gap">\u2026</span>'; }
+else { html += '<button class="pg-btn number' + (p === state.page ? ' active' : '') + '" data-page="' + p + '">' + p + '</button>'; }
+});
+}
+
+html += '<button class="pg-btn icon-btn" data-page="' + (state.page + 1) + '"' + (nextDisabled ? ' disabled' : '') + ' title="Next page">\u203A</button>';
+html += '<button class="pg-btn icon-btn" data-page="' + totalPages + '"' + (nextDisabled ? ' disabled' : '') + ' title="Last page">\u00BB</button>';
+
+paginationControls.innerHTML = html;
+}
+
+function goToPage(page) {
+const ps = state.pageSize === 0 ? allRows.length : state.pageSize;
+const total = allRows.filter(r => {
+return (!statusFilter.value || r.dataset.status === statusFilter.value) && (!severityFilter.value || r.dataset.severity === severityFilter.value) && (!searchInput.value.trim().toLowerCase() || r.textContent.toLowerCase().includes(searchInput.value.trim().toLowerCase()));
+}).length;
+const tp = Math.max(1, Math.ceil(total / ps));
+const p = Math.max(1, Math.min(page, tp));
+if (p === state.page) return;
+state.page = p;
+renderTable();
+document.querySelector('.table-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+paginationControls.addEventListener('click', function(e) {
+const btn = e.target.closest('.pg-btn');
+if (!btn || btn.disabled) return;
+const page = parseInt(btn.dataset.page);
+if (page && page >= 1) goToPage(page);
+});
+
+pageSizeSelect.addEventListener('change', function() {
+state.pageSize = parseInt(this.value);
+state.page = 1;
+renderTable();
+});
+
+// ---- Search / Filter events ----
+function onFilterChange() {
+state.page = 1;
+renderTable();
+}
+
+searchInput.addEventListener('input', onFilterChange);
+statusFilter.addEventListener('change', onFilterChange);
+severityFilter.addEventListener('change', onFilterChange);
+
+clearBtn.addEventListener('click', () => {
+searchInput.value = '';
+statusFilter.value = 'FAIL';
+severityFilter.value = '';
+onFilterChange();
+});
+
+// ---- Sort on header click ----
+document.querySelectorAll('thead th[data-col]').forEach(function(th) {
+th.addEventListener('click', function() {
+const col = parseInt(this.dataset.col);
+if (state.sortCol === col) { state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc'; }
+else { state.sortCol = col; state.sortDir = 'asc'; }
+state.page = 1;
+renderTable();
+});
+});
+
+// ---- Init ----
+
+function init() {
+getSeverities().forEach(s => {
+const o = document.createElement('option');
+o.value = s; o.textContent = s;
+severityFilter.appendChild(o);
+});
+statusFilter.value = 'FAIL';
+pageSizeSelect.value = '25';
+renderTable();
+buildCharts();
+buildRecPanel();
+tableWrap.classList.add('ready');
+}
+
+init();
+
+// ---- Print/Export chart preservation ----
+const chartCanvasIds = ['distChart','rulesChart','typeChart','issuesChart','gaugeChart'];
+let savedCharts = null;
+
+function prepareChartsForExport() {
+savedCharts = [];
+chartCanvasIds.forEach(function(id) {
+const canvas = document.getElementById(id);
+if (!canvas || !canvas.parentNode) return;
+const parent = canvas.parentNode;
+const img = document.createElement('img');
+img.src = canvas.toDataURL('image/png');
+img.alt = 'Chart';
+img.style.cssText = canvas.style.cssText;
+img.style.maxWidth = '100%';
+img.style.maxHeight = '100%';
+img.width = canvas.offsetWidth || canvas.width;
+img.height = canvas.offsetHeight || canvas.height;
+parent.replaceChild(img, canvas);
+savedCharts.push({canvas:canvas,parent:parent,img:img,id:id});
+});
+}
+
+function restoreChartsAfterExport() {
+if (!savedCharts) return;
+savedCharts.forEach(function(item) {
+if (item.parent && item.img && item.img.parentNode === item.parent) {
+item.parent.replaceChild(item.canvas, item.img);
+}
+});
+savedCharts = null;
+}
+
+// ---- Download ----
+downloadBtn.addEventListener('click', () => {
+prepareChartsForExport();
+const doc = document.documentElement.cloneNode(true);
+restoreChartsAfterExport();
+const cloneTbody = doc.querySelector('table tbody');
+Array.from(cloneTbody.querySelectorAll('tr')).forEach(r => r.remove());
+allRows.forEach(r => {
+const clone = r.cloneNode(true);
+clone.style.display = '';
+cloneTbody.appendChild(clone);
+});
+doc.querySelectorAll('.detail-row,.no-results,.pagination-bar,.table-wrap:not(.ready)').forEach(el => el.remove());
+doc.querySelectorAll('thead th .sort-arrow').forEach(el => el.remove());
+const html = '<!DOCTYPE html>\n' + doc.outerHTML;
+const blob = new Blob([html], {type:'text/html'});
+const url = URL.createObjectURL(blob);
+const fn = projectName.replace(/[^a-z0-9_-]+/gi,'_') + '_AUDIT.html';
+const a = document.createElement('a'); a.href = url; a.download = fn;
+document.body.appendChild(a); a.click(); a.remove();
+URL.revokeObjectURL(url);
+});
+
+// ---- Print ----
+printBtn.addEventListener('click', () => {
+prepareChartsForExport();
+setTimeout(function(){window.print();},100);
+});
+
+window.addEventListener('afterprint', function(){
+if (savedCharts) restoreChartsAfterExport();
+});
+
 })();
 </script>
-
 </body>
-
 </html>

@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Environment & Secrets
+.env
+*.env
+.env.*
+
+# Python caches & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+ENV/
+
+# Frontend (handled by frontend build context)
+frontend/
+
+# Editor & Agent files
+.agent/
+.claude/
+.vscode/
+.idea/
+
+# Reports (persisted via Docker volume)
+reports/*
+!reports/latest/
